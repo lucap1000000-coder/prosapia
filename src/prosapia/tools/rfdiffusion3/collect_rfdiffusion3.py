@@ -87,6 +87,7 @@ def collect_rfd3(ctx: CollectCtx[CollectArgs]) -> CollectEach:
                 "rfd3_model": model,
             }
             data.update(_load_metadata(cif_gz.with_suffix("").with_suffix(".json")))
+            data["cif_path"] = str(cif_gz)
             yield Collected(
                 name=f"{d.name}_{i}",
                 parent=d.name,

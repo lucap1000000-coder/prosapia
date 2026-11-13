@@ -1,23 +1,20 @@
 from typing import Iterable
-
+import json
 import pandas as pd
-
 from prosapia.core import Collected, CollectCtx, CollectEach, DesignCtx
 
+KEYS = ("n_res", "fixed_len", "linker_len", "subunit_len")
 
 def collect_chainlen(ctx: CollectCtx) -> CollectEach:
-    # Runs once: index every <name>.len file that the SLURM tasks wrote.
-    len_files = {p.stem: p for p in ctx.out_dir.glob("*.len")}
+    json_files = {p.stem: p for p in ctx.out_dir.glob("*.json")}
+    na = {k: pd.NA for k in KEYS}
 
     def one(d: DesignCtx) -> Iterable[Collected]:
-        # Runs once per design that is ready to collect.
-        f = len_files.get(d.name)
+        f = json_files.get(d.name)
         if f is None:
-            yield Collected(
-                status=f"missing: no .len file for {d.name}",
-                data={"n_res": pd.NA},
-            )
+            yield Collected(status=f"missing: no .json for {d.name}", data=na)
             return
-        yield Collected(data={"n_res": int(f.read_text().strip())}, path=f)
+        metrics = json.loads(f.read_text())
+        yield Collected(data={k: metrics[k] for k in KEYS}, path=f)
 
     return one
