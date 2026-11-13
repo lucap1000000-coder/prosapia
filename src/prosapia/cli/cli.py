@@ -23,6 +23,7 @@ from ..core.tool import Tool
 from ..core.tool_registry import discover, BUILTIN_TOOLS_DIR
 from .fork_tool import build_fork_parser, fork_from_args
 from .new_run_dir import build_new_run_parser, new_run_from_args
+from .setup_project import build_setup_project_parser, setup_project_from_args
 
 
 def _tools_dirs() -> list[Path]:
@@ -44,6 +45,13 @@ def _build_parser(tools: dict[str, Tool]) -> ArgumentParser:
         help="Create a fresh run_dir for a workflow.",
     )
     new_run_p.set_defaults(_dispatch=new_run_from_args)
+
+    setup_p = verbs.add_parser(
+        "setup_project",
+        parents=[build_setup_project_parser()],
+        help="Set up a new linker design project directory from an input PDB.",
+    )
+    setup_p.set_defaults(_dispatch=setup_project_from_args)
 
     init_p = verbs.add_parser(
         "init",
