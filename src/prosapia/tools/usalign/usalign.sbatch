@@ -11,7 +11,7 @@
 set -uo pipefail
 
 # Shared scaffolding: sets MANIFEST/OUT_DIR/SAPIA_LINE.
-source "${SAPIA_PRELUDE:?}"
+source "/data/brussel/118/vsc11875/prosapia/src/prosapia/core/sbatch/sapia_task_prelude.sh"
 
 # Site-specific activation (required) — see docs/configuration.md.
 set +u

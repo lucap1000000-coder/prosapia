@@ -5,7 +5,7 @@
 #SBATCH --mem=2G
 
 set -uo pipefail
-source "${SAPIA_PRELUDE:?}"
+source "/data/brussel/118/vsc11875/prosapia/src/prosapia/core/sbatch/sapia_task_prelude.sh"
 
 set +u
 source "${SAPIA_ACTIVATE_BBCHECK:?set SAPIA_ACTIVATE_BBCHECK in your .env to a tool activation script}"

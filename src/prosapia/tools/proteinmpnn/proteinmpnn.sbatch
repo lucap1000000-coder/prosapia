@@ -1,8 +1,9 @@
 #!/bin/bash
 #SBATCH --job-name=proteinmpnn
-#SBATCH --time=01:00:00
+#SBATCH --clusters=anansi
+#SBATCH --time=04:00:00
 #SBATCH --nodes=1
-#SBATCH --gpus=1
+#SBATCH --gres=shard:1
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=8
 #SBATCH --mem=8G
@@ -10,7 +11,7 @@
 set -euo pipefail
 
 # Shared scaffolding: sets MANIFEST/OUT_DIR/SAPIA_LINE.
-source "${SAPIA_PRELUDE:?}"
+source "/data/brussel/118/vsc11875/prosapia/src/prosapia/core/sbatch/sapia_task_prelude.sh"
 
 # Site-specific activation (required) — see docs/configuration.md.
 set +u
