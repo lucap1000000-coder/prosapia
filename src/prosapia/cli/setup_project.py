@@ -49,6 +49,14 @@ SPEC_TEMPLATE_NOHOT = """contig: "{chain_a}{start}-{end},{linker_min}-{linker_ma
 is_non_loopy: true
 """
 
+RFD4_SPEC_TEMPLATE = """slyb_linker:
+  input: {input_cif}
+  contig: "{chain_a}{start}-{end}, LINK:{linker_min}-{linker_max}, /0, {chain_b}{start}-{end}"
+  conditions:
+    C_CRD: {{true: [{{select: "sel(\'{chain_a}\') and is_protein_backbone"}}, {{select: "sel(\'{chain_b}\') and is_protein_backbone"}}]}}
+    C_SEQ: {{true: [{{select: "sel(\'{chain_a}\')"}} , {{select: "sel(\'{chain_b}\')"}}]}}
+"""
+
 SPEC_TEMPLATE_HOT = """contig: "{chain_a}{start}-{end},{linker_min}-{linker_max},{chain_b}{start}-{end}"
 is_non_loopy: true
 select_hotspots:
@@ -133,6 +141,15 @@ PROSAPIA_TOOLS_DIR=/data/brussel/118/vsc11875/prosapia/src/prosapia/tools
         )
         (specs_dir / f"{name}_nohot.yaml").write_text(spec)
     
+    # Write rfd4 specs (two-chain format, no hotspots)
+    input_cif = str(pdb_path.with_suffix(".cif").resolve())
+    for name, lmin, lmax in [("l20_65", 20, 65), ("l65_104", 65, 104)]:
+        spec = RFD4_SPEC_TEMPLATE.format(
+            input_cif=input_cif, chain_a=a, chain_b=b,
+            start=s, end=e, linker_min=lmin, linker_max=lmax
+        )
+        (specs_dir / f"rfd4_{name}.yaml").write_text(spec)
+
     print(f"Written specs to {specs_dir}")
     print(f"\nProtein info:")
     for k, v in info.items():
