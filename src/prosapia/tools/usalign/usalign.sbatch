@@ -25,6 +25,27 @@ COL_A=$(echo "$SAPIA_LINE" | cut -f4)
 COL_B=$(echo "$SAPIA_LINE" | cut -f5)
 PREFIX=$(echo "$SAPIA_LINE" | cut -f6)
 
+# Convert CIF->PDB if needed
+convert_to_pdb() {
+    local src="$1"
+    local dst="${src%.cif.gz}.pdb"
+    dst="${dst%.cif}.pdb"
+    if [[ "$src" == *.pdb ]]; then
+        echo "$src"
+    elif [[ -f "$dst" ]]; then
+        echo "$dst"
+    else
+        python3 -c "
+import gemmi, sys
+st = gemmi.read_structure('$src')
+st.setup_entities()
+st.write_pdb('$dst')
+" && echo "$dst" || echo "$src"
+    fi
+}
+PDB_A=$(convert_to_pdb "$PDB_A")
+PDB_B=$(convert_to_pdb "$PDB_B")
+
 USALIGN_BIN=${USALIGN_BIN:-USalign}
 # 9 USalign metrics, in the order collect_usalign.py expects.
 HEADER=$'name\tstatus\tpdb_a\tpdb_b\tsup_path\tTM1\tTM2\tRMSD\tID1\tID2\tIDali\tL1\tL2\tLali'
