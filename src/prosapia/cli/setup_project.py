@@ -73,6 +73,8 @@ def get_protein_info(pdb_path: Path) -> dict:
     chain_a = chains[0]
     residues = [r for r in chain_a if r.find_atom("CA", "*")]
     
+    native_sequence = gemmi.one_letter_code([r.name for r in residues])
+
     return {
         "subunit_len": len(residues),
         "n_chains": len(chains),
@@ -80,6 +82,7 @@ def get_protein_info(pdb_path: Path) -> dict:
         "contig_end": residues[-1].seqid.num,
         "chain_a": chain_a.name,
         "chain_b": chains[1].name if len(chains) > 1 else "B",
+        "native_sequence": native_sequence,
         "input_pdb": str(pdb_path.resolve()),
     }
 
