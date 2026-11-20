@@ -65,7 +65,7 @@ infer_ori_strategy: hotspots
 """
 
 
-def get_protein_info(pdb_path: Path) -> dict:
+def get_protein_info(pdb_path: Path, tm_start: int | None = None, tm_end: int | None = None) -> dict:
     st = gemmi.read_structure(str(pdb_path))
     model = st[0]
     chains = list(model)
@@ -83,15 +83,17 @@ def get_protein_info(pdb_path: Path) -> dict:
         "chain_a": chain_a.name,
         "chain_b": chains[1].name if len(chains) > 1 else "B",
         "native_sequence": native_sequence,
+        "tm_start": tm_start,
+        "tm_end": tm_end,
         "input_pdb": str(pdb_path.resolve()),
     }
 
 
-def setup_project(pdb_path: Path, run_dir: Path) -> None:
+def setup_project(pdb_path: Path, run_dir: Path, tm_start: int | None = None, tm_end: int | None = None) -> None:
     run_dir.mkdir(parents=True, exist_ok=True)
 
     # 1. protein_info.json
-    info = get_protein_info(pdb_path)
+    info = get_protein_info(pdb_path, tm_start=tm_start, tm_end=tm_end)
     info_path = run_dir / "protein_info.json"
     info_path.write_text(json.dumps(info, indent=2))
     print(f"Written {info_path}")
@@ -164,11 +166,13 @@ def build_setup_project_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(add_help=False)
     parser.add_argument("--pdb", type=Path, required=True, help="Input PDB file.")
     parser.add_argument("--run-dir", type=Path, default=Path("."), help="Project directory to set up. Defaults to current directory.")
+    parser.add_argument("--tm-start", type=int, default=None, help="First residue of TM helix (original numbering).")
+    parser.add_argument("--tm-end", type=int, default=None, help="Last residue of TM helix (original numbering).")
     return parser
 
 
 def setup_project_from_args(args: argparse.Namespace) -> None:
-    setup_project(pdb_path=args.pdb, run_dir=args.run_dir)
+    setup_project(pdb_path=args.pdb, run_dir=args.run_dir, tm_start=args.tm_start, tm_end=args.tm_end)
 
 
 def main() -> None:
