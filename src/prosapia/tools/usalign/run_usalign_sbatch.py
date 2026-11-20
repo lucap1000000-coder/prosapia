@@ -3,7 +3,7 @@
 Submit a SLURM array to compare two predicted structures per design using USalign.
 
 Both structures are converted to PDB (via gemmi) here at manifest-build time and
-cached under <run_dir>/.cif_to_pdb/; each array task then just runs USalign and
+each array task runs USalign and
 writes per-design metrics to a TSV file. Use ``sapia collect usalign`` to merge
 results back into the table.
 
@@ -34,7 +34,6 @@ from typing import cast
 import pandas as pd
 
 from prosapia.core import CommonArgs, ManifestCtx
-from prosapia.utils import ensure_pdb
 
 
 class USalignArgs(CommonArgs):
